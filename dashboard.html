@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmoSense · Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#bbd8ff;--panel:#f5f9ff;--panel2:#b2cbff;--border:#0d0d0e;--accent:#0e0e0e;
+  --accent2:#7b5cfa;--blink:#25ffbd;--warn:#ff6b35;--text:#000;--muted:#000;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,229,192,.015) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,229,192,.015) 1px,transparent 1px);background-size:56px 56px;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 36px;height:64px;
+  border-bottom:1px solid var(--border);background:rgba(8,12,16,.92);backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f5f5f5,#fffafa);
+  display:flex;align-items:center;justify-content:center;font-size:17px;}
+.brand-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;
+  background:linear-gradient(90deg,#fff,#fff);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.user-chip{display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:40px;padding:6px 16px 6px 8px;font-size:13px;}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;font-family:'Syne',sans-serif;}
+.nav-link{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;
+  cursor:pointer;border:none;font-family:'Syne',sans-serif;transition:all .2s;}
+.nl-emo{background:linear-gradient(135deg,#9075ff,#f79090);color:#fff;}
+.nl-emo:hover{opacity:.85;transform:translateY(-1px);}
+.nl-blink{background:linear-gradient(135deg,#25ffbd,#00b8ff);color:#181616;font-weight:700;}
+.nl-blink:hover{opacity:.85;transform:translateY(-1px);}
+.nl-ghost{background:transparent;color:#fff;border:1px solid #fff;}
+.nl-ghost:hover{color:var(--text);border-color:var(--muted);}
+main{max-width:1220px;margin:0 auto;padding:36px 24px;position:relative;z-index:1;}
+.hero{background:linear-gradient(135deg,rgba(123,92,250,.1),rgba(0,229,192,.07));
+  border:1px solid var(--border);border-radius:20px;padding:32px 36px;margin-bottom:24px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,192,.07),transparent);}
+.hero-text h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;margin-bottom:8px;}
+.hero-text p{color:var(--muted);font-size:14px;line-height:1.7;max-width:500px;}
+.hero-badge{flex-shrink:0;background:rgba(0,229,192,.08);border:1px solid rgb(0 0 0/20%);
+  border-radius:16px;padding:18px 28px;text-align:center;}
+.hb-val{font-family:'Syne',sans-serif;font-size:50px;font-weight:600;color:#0e0e0e;}
+.hb-lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+.app-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.app-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;
+  padding:28px;text-decoration:none;color:var(--text);transition:all .25s;
+  display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden;}
+.app-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.app-card.blink-card:hover{border-color:rgba(0,232,162,.4);box-shadow:0 12px 40px rgba(0,232,162,.1);}
+.app-card.emo-card:hover{border-color:rgba(123,92,250,.4);box-shadow:0 12px 40px rgba(123,92,250,.1);}
+.card-glow{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;opacity:.12;pointer-events:none;}
+.app-icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.app-title{font-family:'Syne',sans-serif;font-size:25px;font-weight:600;margin-bottom:6px;}
+.app-desc{color:var(--muted);font-size:13px;line-height:1.6;}
+.app-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;}
+.tag-green{background:rgba(0,232,162,.1);color:#000;border:1px solid rgba(0,232,162,.2);}
+.tag-purple{background:rgba(123,92,250,.1);color:#000;border:1px solid rgba(123,92,250,.2);}
+.tag-orange{background:rgba(255,107,53,.1);color:#000;border:1px solid rgba(255,107,53,.2);}
+.app-cta{margin-top:auto;display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.alert-strip{background:rgba(0,232,162,.05);border:1px solid rgba(0 0 0/.15);
+  border-radius:14px;padding:16px 22px;display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;}
+.as-icon{font-size:20px;margin-top:1px;}
+.as-title{font-size:14px;font-weight:600;color:#000;margin-bottom:4px;}
+.as-desc{font-size:12px;color:var(--muted);line-height:1.65;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 18px;}
+.sc-label{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.sc-value{font-family:'Syne',sans-serif;font-size:25px;font-weight:600;line-height:1;}
+.sc-sub{font-size:12px;color:var(--muted);margin-top:5px;}
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-bottom:24px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.panel-body{padding:20px;}
+.emo-bar-list{display:flex;flex-direction:column;gap:12px;}
+.emo-bar-row{display:flex;align-items:center;gap:12px;}
+.ebar-label{width:88px;font-size:13px;text-transform:capitalize;flex-shrink:0;}
+.ebar-track{flex:1;height:8px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden;}
+.ebar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.16,1,.3,1);}
+.ebar-count{width:28px;font-size:12px;color:var(--muted);text-align:right;flex-shrink:0;}
+.quick-grid{display:flex;flex-direction:column;gap:10px;padding:18px;}
+.qa-item{display:flex;align-items:center;gap:14px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;text-decoration:none;color:var(--text);transition:all .2s;cursor:pointer;}
+.qa-item:hover{border-color:var(--accent);transform:translateX(4px);}
+.qa-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.qa-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.qa-desc{font-size:12px;color:var(--muted);margin-top:1px;}
+.qa-arrow{margin-left:auto;color:var(--muted);font-size:16px;}
+.session-row{display:flex;align-items:center;gap:12px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:9px;}
+.sr-icon{font-size:22px;flex-shrink:0;}
+.sr-top{font-size:13px;font-weight:500;margin-bottom:2px;}
+.sr-date{font-size:11px;color:var(--muted);}
+.sr-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;
+  background:rgba(0,229,192,.1);color:var(--accent);border:1px solid rgba(0,229,192,.2);flex-shrink:0;}
+.profile-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.profile-top{background:linear-gradient(135deg,rgba(123,92,250,.13),rgba(0,229,192,.07));
+  padding:26px;text-align:center;border-bottom:1px solid var(--border);}
+.profile-avatar{width:68px;height:68px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;font-family:'Syne',sans-serif;color:#fff;
+  margin:0 auto 10px;box-shadow:0 6px 20px rgba(123,92,250,.35);}
+.profile-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;}
+.profile-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.profile-fields{padding:18px;}
+.pf-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--border);}
+.pf-row:last-child{border-bottom:none;}
+.pf-key{font-size:12px;color:var(--muted);font-weight:500;}
+.pf-val{font-size:13px;font-weight:600;}
+/* DB indicator */
+.db-indicator{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:20px;background:rgba(0,229,192,.15);
+  border:1px solid rgba(0,229,192,.3);color:#ffffff;margin-left:10px;}
+.db-dot{width:6px;height:6px;border-radius:50%;background:#00c49a;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media(max-width:960px){.stats-row{grid-template-columns:repeat(2,1fr);}
+  .two-col,.app-cards{grid-template-columns:1fr;}nav{padding:0 18px;}main{padding:22px 14px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <div class="brand-icon">🧠</div>
+    <div class="brand-name">EmoSense</div>
+    <div class="db-indicator"><div class="db-dot"></div><span id="db-nav-status">MySQL</span></div>
+  </div>
+  <div class="nav-right">
+    <div class="user-chip">
+      <div class="avatar">{{ user.username[0].upper() if user.username else '?' }}</div>
+      <span>{{ user.username }}</span>
+    </div>
+    <a href="/blink"   class="nav-link nl-blink">👁 Blink Comm</a>
+    <a href="/emotion" class="nav-link nl-emo">▶️ Emotion</a>
+    <a href="/logout"  class="nav-link nl-ghost">Sign Out</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Welcome back, {{ user.username }} 👋</h1>
+      <p>Your unified AAC &amp; emotion wellness dashboard powered by <strong>MySQL</strong>. Use <strong>Blink Communication</strong> for word-selection via eye blinks, or <strong>Emotion Detection</strong> to monitor your wellbeing in real-time.</p>
+    </div>
+    <div class="hero-badge">
+      <div class="hb-val" id="total-sessions">—</div>
+      <div class="hb-lbl">Sessions Total</div>
+    </div>
+  </div>
+
+  <!-- ALERT STRIP -->
+  <div class="alert-strip">
+    <div class="as-icon">🔒</div>
+    <div>
+      <div class="as-title">Auto-Alert System Active → {{ user.email }}</div>
+      <div class="as-desc">
+        <strong>Blink:</strong> Critical words (HELP, PAIN, MEDICINE, TOILET, SCARED, CALL) instantly email the caregiver. All words stored in MySQL blink_log table.&nbsp;&nbsp;
+        <strong>Emotion:</strong> Fear or Sadness lasting 20+ seconds triggers a wellbeing alert email. Session history saved in MySQL sessions table.
+      </div>
+    </div>
+  </div>
+
+  <!-- APP CARDS -->
+  <div class="app-cards">
+    <a href="/blink" class="app-card blink-card">
+      <div class="card-glow" style="background:radial-gradient(circle,#00e8a2,transparent)"></div>
+      <div class="app-icon" style="background:rgba(0,232,162,.12)">👁</div>
+      <div>
+        <div class="app-title">Blink Communication</div>
+        <div class="app-desc">Auto-scanning word selector for ALS &amp; paralysis patients. Blink once to select. Critical words automatically alert the caregiver. Every word logged to MySQL.</div>
+        <div class="app-tags">
+          <span class="tag tag-green">🔔 Auto Email Alert</span>
+          <span class="tag tag-green">🔊 Text-to-Speech</span>
+          <span class="tag tag-orange">🚫 Critical Word Trigger</span>
+        </div>
+      </div>
+      <div class="app-cta" style="color:#06205b">Open Blink Comm →</div>
+    </a>
+    <a href="/emotion" class="app-card emo-card">
+      <div class="card-glow" style="background:radial-gradient(circle,#7b5cfa,transparent)"></div>
+      <div class="app-icon" style="background:rgba(123,92,250,.12)">🧠</div>
+      <div>
+        <div class="app-title">Emotion Detection</div>
+        <div class="app-desc">Real-time face emotion recognition via webcam. Detects 7 emotions. Persistent fear or sadness triggers wellbeing alert. All sessions saved to MySQL.</div>
+        <div class="app-tags">
+          <span class="tag tag-purple">🧘 Wellbeing Alert</span>
+          <span class="tag tag-purple">🎥 Live Webcam</span>
+          <span class="tag tag-purple">7 Emotions</span>
+        </div>
+      </div>
+      <div class="app-cta" style="color:#06205b">Open Emotion Detection →</div>
+    </a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="sc-label">Total Sessions</div>
+      <div class="sc-value" id="stat-sessions">—</div>
+      <div class="sc-sub">Stored in MySQL</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Most Frequent</div>
+      <div class="sc-value" id="stat-topemo" style="font-size:20px">—</div>
+      <div class="sc-sub">Top emotion detected</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Positive Ratio</div>
+      <div class="sc-value" id="stat-positive" style="color:var(--accent)">—</div>
+      <div class="sc-sub">Happy + Surprise + Neutral</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Alert Emotions</div>
+      <div class="sc-value" id="stat-alerts" style="color:#b47efa">—</div>
+      <div class="sc-sub">Fear + Sadness detections</div>
+    </div>
+  </div>
+
+  <!-- 2-COL: CHART + QUICK ACTIONS -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">📊 Emotion Frequency</div>
+        <span style="font-size:12px;color:var(--muted)">From MySQL · All sessions</span>
+      </div>
+      <div class="panel-body">
+        <div class="emo-bar-list" id="emo-bars">
+          <div style="color:var(--muted);font-size:14px;text-align:center;padding:32px 0">Loading from MySQL…</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">⚡ Quick Actions</div></div>
+      <div class="quick-grid">
+        <a href="/blink" class="qa-item" style="border-color:rgba(0,232,162,.2)">
+          <div class="qa-icon" style="background:rgba(0,232,162,.1)">👁</div>
+          <div><div class="qa-title" style="color:#000">Blink Communication</div><div class="qa-desc">AAC word selection via blinks</div></div>
+          <div class="qa-arrow">›</div>
+        </a>
+        <a href="/emotion" class="qa-item">
+          <div class="qa-icon" style="background:rgba(123,92,250,.1)">🎥</div>
+          <div><div class="qa-title">Start Emotion Session</div><div class="qa-desc">Real-time detection via webcam</div></div>
+          <div class="qa-arrow">›</div>
+        </a>
+        <div class="qa-item" onclick="document.getElementById('sess-section').scrollIntoView({behavior:'smooth'})">
+          <div class="qa-icon" style="background:rgba(0,184,255,.1)">📋</div>
+          <div><div class="qa-title">Session History</div><div class="qa-desc">View MySQL session records</div></div>
+          <div class="qa-arrow">›</div>
+        </div>
+        <a href="/test_email" class="qa-item">
+          <div class="qa-icon" style="background:rgba(255,107,53,.1)">📧</div>
+          <div><div class="qa-title">Test Alert Email</div><div class="qa-desc">Send a test caregiver email</div></div>
+          <div class="qa-arrow">›</div>
+        </a>
+        <a href="/logout" class="qa-item">
+          <div class="qa-icon" style="background:rgba(255,107,107,.1)">🚪</div>
+          <div><div class="qa-title">Sign Out</div><div class="qa-desc">End your current session</div></div>
+          <div class="qa-arrow">›</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2-COL: SESSIONS + PROFILE -->
+  <div class="two-col" id="sess-section">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🕐 Recent Sessions</div>
+        <span style="font-size:12px;color:var(--muted)">From MySQL</span>
+      </div>
+      <div class="panel-body">
+        <div id="session-list"><div style="color:var(--muted);font-size:14px;text-align:center;padding:24px 0">Loading from MySQL…</div></div>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-top">
+        <div class="profile-avatar">{{ user.username[0].upper() if user.username else '?' }}</div>
+        <div class="profile-name">{{ user.username }}</div>
+        <div class="profile-sub">EmoSense Member · MySQL</div>
+      </div>
+      <div class="profile-fields">
+        <div class="pf-row"><span class="pf-key">Email</span><span class="pf-val">{{ user.email }}</span></div>
+        <div class="pf-row"><span class="pf-key">Phone</span><span class="pf-val">{{ user.phone }}</span></div>
+        <div class="pf-row"><span class="pf-key">Age</span><span class="pf-val">{{ user.age }} yrs</span></div>
+        <div class="pf-row"><span class="pf-key">Gender</span><span class="pf-val" style="text-transform:capitalize">{{ user.gender }}</span></div>
+        <div class="pf-row"><span class="pf-key">Member Since</span><span class="pf-val">{{ user.joined.strftime('%d %b %Y') if user.joined else '—' }}</span></div>
+        <div class="pf-row"><span class="pf-key">User ID</span><span class="pf-val" style="font-size:10px;word-break:break-all">{{ user.id[:16] }}…</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const EMO_COLORS={happy:'#00e5c0',surprise:'#f0c040',neutral:'#a0b4cc',sadness:'#7b9cfa',anger:'#ff6b6b',fear:'#b47efa',disgust:'#52c97a'};
+const EMO_ICONS={happy:'😄',surprise:'😲',neutral:'😐',sadness:'😢',anger:'😠',fear:'😨',disgust:'🤢'};
+const POSITIVE=['happy','surprise','neutral'],ALERT_EMO=['fear','sadness'];
+
+async function loadStats(){
+  try{
+    // DB status
+    const dbRes=await fetch('/api/db_status');const dbData=await dbRes.json();
+    const ns=document.getElementById('db-nav-status');
+    if(dbData.status==='connected'){ns.textContent='MySQL ✓';}
+    else{ns.textContent='DB Error ✗';ns.style.color='#cc2200';}
+
+    const r=await fetch('/api/user_stats'),d=await r.json();
+    const c=d.emotion_counts||{},tot=d.total_sessions||0;
+    document.getElementById('total-sessions').textContent=tot;
+    document.getElementById('stat-sessions').textContent=tot;
+    let top='—',tc=0;
+    for(const[e,n] of Object.entries(c)) if(n>tc){top=e;tc=n;}
+    document.getElementById('stat-topemo').textContent=top!=='—'?(EMO_ICONS[top]||'🎭')+' '+top:'—';
+    const all=Object.values(c).reduce((a,v)=>a+v,0);
+    const pos=POSITIVE.reduce((a,e)=>a+(c[e]||0),0);
+    document.getElementById('stat-positive').textContent=all>0?Math.round(pos/all*100)+'%':'—';
+    document.getElementById('stat-alerts').textContent=ALERT_EMO.reduce((a,e)=>a+(c[e]||0),0)||'0';
+
+    const bars=document.getElementById('emo-bars');
+    if(!all){bars.innerHTML='<div style="color:var(--muted);font-size:14px;text-align:center;padding:32px 0">No sessions yet. <a href="/emotion" style="color:var(--accent);text-decoration:none">Start one!</a></div>';return;}
+    const sorted=Object.entries(c).sort((a,b)=>b[1]-a[1]),mx=sorted[0][1];
+    bars.innerHTML=sorted.map(([e,n])=>
+      '<div class="emo-bar-row">'
+      +'<div class="ebar-label">'+(EMO_ICONS[e]||'🎭')+' '+e+'</div>'
+      +'<div class="ebar-track"><div class="ebar-fill" style="width:'+Math.round(n/mx*100)+'%;background:'+(EMO_COLORS[e]||'#a0b4cc')+'"></div></div>'
+      +'<div class="ebar-count">'+n+'</div></div>'
+    ).join('');
+
+    const sl=document.getElementById('session-list'),rec=d.recent_sessions||[];
+    if(!rec.length){sl.innerHTML='<div style="color:var(--muted);font-size:14px;text-align:center;padding:24px 0">No sessions yet.</div>';return;}
+    sl.innerHTML=rec.map(s=>{
+      const em=s.emotions||[];
+      const mp={};em.forEach(e=>mp[e]=(mp[e]||0)+1);
+      const dom=Object.entries(mp).sort((a,b)=>b[1]-a[1])[0];
+      const ic=dom?(EMO_ICONS[dom[0]]||'🎭'):(s.type==='blink'?'👁':'📊');
+      const nm=dom?dom[0]:(s.type==='blink'?'Blink ('+((s.words||[]).length)+' words)':'Mixed');
+      const dt=s.date?new Date(s.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+      const badge=s.type==='blink'?'🔵 blink':'🟣 emotion';
+      return '<div class="session-row"><span class="sr-icon">'+ic+'</span>'
+        +'<div style="flex:1"><div class="sr-top">'+badge+' · <strong style="text-transform:capitalize">'+nm+'</strong></div>'
+        +'<div class="sr-date">'+dt+'</div></div>'
+        +'<span class="sr-badge">'+em.length+' det.</span></div>';
+    }).join('');
+  }catch(e){console.error('[stats]',e);}
+}
+loadStats();
+</script>
+</body>
+</html>

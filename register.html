@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmoSense · Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#bbd8ff;--border:#1a2840;--accent:#00e5c0;--accent2:#7b5cfa;--text:#000;--muted:#000;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;justify-content:center;padding:24px 16px;position:relative;}
+.bg-canvas{position:fixed;inset:0;overflow:hidden;z-index:0;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.12;animation:drift 18s ease-in-out infinite;}
+.orb1{width:500px;height:500px;background:var(--accent2);top:-20%;right:-10%;}
+.orb2{width:400px;height:400px;background:var(--accent);bottom:-15%;left:-5%;animation-delay:-9s;}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-25px)}}
+.grid-bg{position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(0,229,192,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,229,192,.025) 1px,transparent 1px);background-size:56px 56px;}
+.card{position:relative;z-index:10;width:520px;max-width:100%;
+  background:rgb(95 200 225/85%);border:1px solid var(--border);border-radius:24px;
+  padding:40px;backdrop-filter:blur(24px);
+  box-shadow:0 32px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
+  animation:slideUp .5s cubic-bezier(.16,1,.3,1) both;}
+@keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent2),transparent);}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;justify-content:center;}
+.logo-icon{width:44px;height:44px;border-radius:13px;
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  box-shadow:0 8px 24px rgba(123,92,250,.4);}
+.logo-text{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+h2{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;margin-bottom:4px;text-align:center;}
+.sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px;}
+.alert-err{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.35);
+  border-radius:10px;padding:11px 16px;font-size:13px;color:#cc2200;margin-bottom:18px;
+  display:flex;gap:8px;align-items:center;font-weight:600;animation:shake .4s ease;}
+.alert-ok{background:rgba(0,229,192,.1);border:1px solid rgba(0,229,192,.35);
+  border-radius:10px;padding:11px 16px;font-size:13px;color:#005a45;margin-bottom:18px;
+  display:flex;gap:8px;align-items:center;font-weight:600;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field{margin-bottom:0;}
+.field.full{grid-column:1/-1;}
+label{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:7px;}
+input,select{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);
+  border-radius:11px;padding:12px 14px;font-size:14px;color:var(--text);
+  font-family:'DM Sans',sans-serif;outline:none;transition:all .25s;
+  appearance:none;-webkit-appearance:none;}
+input:focus,select:focus{border-color:var(--accent2);background:rgba(123,92,250,.08);
+  box-shadow:0 0 0 3px rgba(123,92,250,.15);}
+input::placeholder{color:rgba(0,0,0,.38);}
+select option{background:#fff;color:#000;}
+.select-wrap{position:relative;}
+.select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:13px;pointer-events:none;}
+.pwd-row{position:relative;}
+.pwd-row input{padding-right:46px;}
+.pwd-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:17px;line-height:1;padding:4px;transition:opacity .2s;}
+.pwd-toggle:hover{opacity:.65;}
+.strength-bar{height:4px;border-radius:2px;margin-top:9px;background:rgba(0,0,0,88%);overflow:hidden;}
+.strength-fill{height:100%;width:0%;transition:width .35s,background .35s;border-radius:2px;}
+.strength-row{display:flex;justify-content:space-between;margin-top:5px;}
+.strength-label{font-size:11px;font-weight:700;transition:color .3s;}
+.pwd-hint-text{font-size:12px;color:rgba(0,0,0);}
+.pwd-reqs{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-top:9px;}
+.req{font-size:11px;color:rgba(0,0,0,97%);display:flex;align-items:center;gap:5px;transition:color .25s;}
+.rdot{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0);flex-shrink:0;transition:background .25s;}
+.req.met{color:#006e52;}
+.req.met .rdot{background:#00c49a;}
+.match-hint{font-size:11px;font-weight:600;margin-top:6px;min-height:16px;}
+.btn-submit{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  background:linear-gradient(135deg,#7560d1,#31534d);color:#fff;margin-top:20px;
+  box-shadow:0 8px 24px rgba(123,92,250,.35);transition:all .25s;}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(123,92,250,.45);}
+.privacy{margin-top:16px;font-size:12px;color:var(--muted);text-align:center;line-height:1.6;}
+.privacy span{color:#7e367f;}
+.divider{border:none;border-top:1px solid var(--border);margin:22px 0;}
+.footer-link{text-align:center;font-size:13px;color:var(--muted);}
+.footer-link a{color:#7e367f;text-decoration:none;font-weight:600;}
+.footer-link a:hover{text-decoration:underline;}
+.otp-section{display:none;grid-column:1/-1;background:rgba(123,92,250,.07);
+  border:1.5px solid rgba(123,92,250,.25);border-radius:16px;padding:22px 20px;margin-top:4px;
+  animation:fadeIn .35s ease both;}
+.otp-section.visible{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.otp-section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  color:#3a0f8a;margin-bottom:4px;display:flex;align-items:center;gap:7px;}
+.otp-sent-badge{display:inline-block;background:rgba(0,229,192,.15);
+  border:1px solid rgba(0,229,192,.4);border-radius:20px;padding:3px 12px;
+  font-size:11px;font-weight:700;color:#005a45;}
+.otp-email-note{font-size:12px;color:rgba(0,0,0,.55);margin-bottom:16px;line-height:1.5;}
+.otp-email-note strong{color:#3a0f8a;}
+.otp-inputs{display:flex;gap:8px;justify-content:flex-start;margin:12px 0;}
+.otp-digit{width:46px;height:54px;background:#fff!important;border:2px solid #1a2840!important;
+  border-radius:12px;text-align:center;font-size:24px;font-weight:800;color:#000!important;
+  font-family:'Syne',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s,transform .2s;
+  caret-color:var(--accent2);padding:0!important;appearance:none;-webkit-appearance:none;}
+.otp-digit:focus{border-color:var(--accent2)!important;background:#f0ecff!important;
+  box-shadow:0 0 0 3px rgba(123,92,250,.25);transform:scale(1.06);}
+.otp-digit.filled{border-color:var(--accent)!important;background:#e6fff9!important;color:#000!important;}
+.otp-digit.error{border-color:#ff3b3b!important;background:#fff0f0!important;color:#000!important;}
+#otp-hidden{display:none;}
+.otp-meta-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.timer-row{font-size:12px;color:rgba(0,0,0,.5);}
+.timer-countdown{font-weight:700;color:#7b5cfa;}
+.otp-verified-banner{display:none;background:rgba(0,229,192,.15);border:1px solid rgba(0,229,192,.45);
+  border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;color:#004d3a;
+  margin-top:12px;align-items:center;gap:8px;}
+.otp-verified-banner.show{display:flex;}
+.btn-ghost{background:none;border:1px solid var(--border);border-radius:9px;padding:7px 14px;
+  font-size:12px;font-weight:600;cursor:pointer;color:var(--text);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.btn-ghost:hover{border-color:var(--accent2);background:rgba(123,92,250,.08);}
+.btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
+.btn-gen-otp{width:100%;padding:12px;border-radius:11px;border:none;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  background:linear-gradient(135deg,var(--accent2),#5a3fd4);color:#fff;margin-top:4px;
+  box-shadow:0 6px 18px rgba(123,92,250,.3);transition:all .25s;grid-column:1/-1;}
+.btn-gen-otp:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(123,92,250,.4);}
+.btn-gen-otp:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+</style>
+</head>
+<body>
+<div class="bg-canvas"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<div class="grid-bg"></div>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
+    <div class="logo-text">EmoSense</div>
+  </div>
+  <h2>Create Your Account</h2>
+  <p class="sub">Start your personalised emotion wellness journey</p>
+
+  {% if error %}<div class="alert-err">⚠️ {{ error }}</div>{% endif %}
+  {% if success %}<div class="alert-ok">✓ {{ success }}</div>{% endif %}
+
+  <form method="POST" action="/register" id="reg-form" onsubmit="return validateForm(event)">
+    <input type="hidden" name="action" id="form-action" value="send_otp">
+    <input type="hidden" name="otp"   id="otp-hidden">
+    <input type="hidden" name="email" id="email-hidden">
+    <div class="form-grid">
+
+      <div class="field full">
+        <label>Username</label>
+        <input type="text" name="username" id="f-username" placeholder="e.g. john_doe" required autocomplete="username">
+      </div>
+
+      <div class="field">
+        <label>Age</label>
+        <input type="number" name="age" placeholder="e.g. 24" min="10" max="110" required>
+      </div>
+
+      <div class="field">
+        <label>Gender</label>
+        <div class="select-wrap">
+          <select name="gender" required>
+            <option value="" disabled selected>Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="transgender">Transgender</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="tel" name="phone" placeholder="+91 9876543210" required>
+      </div>
+
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" name="email" id="f-email" placeholder="you@example.com" required oninput="resetOtpState()">
+      </div>
+
+      <div class="field full">
+        <label>Password <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:rgba(0,0,0,.5)">— min 6 chars</span></label>
+        <div class="pwd-row">
+          <input type="password" name="password" id="pwd" placeholder="e.g. MyP@ss42!"
+                 required minlength="6" maxlength="32" autocomplete="new-password" oninput="checkStrength(this.value)">
+          <button type="button" class="pwd-toggle" onclick="toggleVis('pwd',this)">👁</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="sfill"></div></div>
+        <div class="strength-row">
+          <span class="pwd-hint-text">Mix letters, numbers &amp; symbols</span>
+          <span class="strength-label" id="slabel"></span>
+        </div>
+        <div class="pwd-reqs">
+          <div class="req" id="req-len"><span class="rdot"></span>At least 6 characters</div>
+          <div class="req" id="req-upper"><span class="rdot"></span>Uppercase (A–Z)</div>
+          <div class="req" id="req-lower"><span class="rdot"></span>Lowercase (a–z)</div>
+          <div class="req" id="req-num"><span class="rdot"></span>Number (0–9)</div>
+          <div class="req" id="req-special"><span class="rdot"></span>Special character</div>
+          <div class="req" id="req-long"><span class="rdot"></span>10+ chars (recommended)</div>
+        </div>
+      </div>
+
+      <div class="field full">
+        <label>Confirm Password</label>
+        <div class="pwd-row">
+          <input type="password" name="confirm" id="confirm" placeholder="Re-enter your password"
+                 required maxlength="32" autocomplete="new-password" oninput="checkMatch()">
+          <button type="button" class="pwd-toggle" onclick="toggleVis('confirm',this)">👁</button>
+        </div>
+        <div class="match-hint" id="match-hint"></div>
+      </div>
+
+      <button type="button" class="btn-gen-otp" id="gen-otp-btn" onclick="generateOtp()">
+        🔐 Generate &amp; Send OTP to Email
+      </button>
+
+      <div class="otp-section" id="otp-section">
+        <div class="otp-section-title">
+          <span>📬 Enter Verification Code</span>
+          <span class="otp-sent-badge">Sent ✓</span>
+        </div>
+        <div class="otp-email-note">A 6-digit OTP was sent to <strong id="otp-email-display"></strong>. It expires in 5 minutes.</div>
+        <div class="otp-inputs" id="otp-inputs">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" autocomplete="off" data-index="0">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" autocomplete="off" data-index="1">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" autocomplete="off" data-index="2">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" autocomplete="off" data-index="3">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" autocomplete="off" data-index="4">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" autocomplete="off" data-index="5">
+        </div>
+        <div class="otp-meta-row">
+          <div class="timer-row">Expires in <span class="timer-countdown" id="timer">05:00</span></div>
+          <button type="button" class="btn-ghost" id="resend-btn" onclick="resendOtp()" disabled>🔄 Resend</button>
+        </div>
+        <div id="otp-inline-err" style="display:none;font-size:12px;font-weight:600;color:#cc2200;margin-top:8px;"></div>
+        <div class="otp-verified-banner" id="otp-verified-banner">✅ Email verified successfully!</div>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn-submit" id="submit-btn" disabled style="opacity:.45;cursor:not-allowed">
+      Create Account →
+    </button>
+  </form>
+
+  <p class="privacy">By registering you agree your data is stored securely in our MySQL database and used only to improve your experience. <span>No data is ever sold.</span></p>
+  <hr class="divider">
+  <div class="footer-link">Already have an account? <a href="/login">Sign in</a></div>
+</div>
+
+<script>
+function toggleVis(id,btn){
+  const el=document.getElementById(id);const hide=el.type==='password';
+  el.type=hide?'text':'password';btn.textContent=hide?'︶':'👁';
+}
+function checkStrength(pwd){
+  const hasLen=pwd.length>=6,hasUpper=/[A-Z]/.test(pwd),hasLower=/[a-z]/.test(pwd);
+  const hasNum=/[0-9]/.test(pwd),hasSpecial=/[^a-zA-Z0-9]/.test(pwd),hasLong=pwd.length>=10;
+  setReq('req-len',hasLen);setReq('req-upper',hasUpper);setReq('req-lower',hasLower);
+  setReq('req-num',hasNum);setReq('req-special',hasSpecial);setReq('req-long',hasLong);
+  let score=[hasLen,hasUpper,hasLower,hasNum,hasSpecial,hasLong].filter(Boolean).length;
+  if(pwd.length>=14)score++;
+  const levels=[{pct:0,color:'transparent',text:''},{pct:15,color:'#ff3b3b',text:'Very Weak'},
+    {pct:30,color:'#ff7043',text:'Weak'},{pct:48,color:'#ffa726',text:'Fair'},
+    {pct:64,color:'#d4e157',text:'Moderate'},{pct:80,color:'#66bb6a',text:'Strong'},
+    {pct:92,color:'#00e5c0',text:'Very Strong'},{pct:100,color:'#00c49a',text:'Excellent ✓'}];
+  const lvl=levels[Math.min(score,levels.length-1)];
+  document.getElementById('sfill').style.cssText=`width:${lvl.pct}%;background:${lvl.color}`;
+  const sl=document.getElementById('slabel');sl.textContent=lvl.text;sl.style.color=lvl.color;
+  checkMatch();
+}
+function setReq(id,met){document.getElementById(id)?.classList.toggle('met',met);}
+function checkMatch(){
+  const pwd=document.getElementById('pwd')?.value,conf=document.getElementById('confirm')?.value;
+  const hint=document.getElementById('match-hint');
+  if(!hint||!conf){if(hint)hint.textContent='';return;}
+  if(pwd===conf){hint.textContent='✓ Passwords match';hint.style.color='#006e52';}
+  else{hint.textContent='✗ Passwords do not match';hint.style.color='#cc2200';}
+}
+function showFormError(msg){
+  const old=document.getElementById('js-err');if(old)old.remove();
+  const div=document.createElement('div');div.id='js-err';div.className='alert-err';
+  div.innerHTML='⚠️ '+msg;
+  document.getElementById('reg-form').insertAdjacentElement('beforebegin',div);
+  div.scrollIntoView({behavior:'smooth',block:'center'});
+}
+let otpVerified=false,timerInterval=null;
+function resetOtpState(){
+  otpVerified=false;
+  document.getElementById('otp-section').classList.remove('visible');
+  document.getElementById('otp-verified-banner').classList.remove('show');
+  const sb=document.getElementById('submit-btn');
+  sb.disabled=true;sb.style.opacity='.45';sb.style.cursor='not-allowed';
+  const gb=document.getElementById('gen-otp-btn');
+  gb.disabled=false;gb.textContent='🔐 Generate & Send OTP to Email';
+  clearDigits();if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+}
+function clearDigits(){
+  document.querySelectorAll('.otp-digit').forEach(d=>{d.value='';d.classList.remove('filled','error');d.disabled=false;});
+  document.getElementById('otp-hidden').value='';
+  const errEl=document.getElementById('otp-inline-err');
+  if(errEl){errEl.style.display='none';errEl.textContent='';}
+}
+async function generateOtp(){
+  const username=document.getElementById('f-username')?.value.trim();
+  const email=document.getElementById('f-email')?.value.trim();
+  const pwd=document.getElementById('pwd')?.value;
+  const conf=document.getElementById('confirm')?.value;
+  const age=document.querySelector('input[name="age"]')?.value;
+  const gender=document.querySelector('select[name="gender"]')?.value;
+  const phone=document.querySelector('input[name="phone"]')?.value;
+  if(!username||!age||!gender||!phone||!email||!pwd||!conf){showFormError('Please fill in all fields before generating the OTP.');return;}
+  if(!email.includes('@')||!email.includes('.')){showFormError('Please enter a valid email address.');return;}
+  if(pwd.length<6){showFormError('Password must be at least 6 characters.');return;}
+  if(pwd!==conf){showFormError('Passwords do not match.');return;}
+  const btn=document.getElementById('gen-otp-btn');btn.disabled=true;btn.textContent='⏳ Sending OTP…';
+  try{
+    const fd=new FormData();
+    fd.append('action','send_otp');fd.append('username',username);fd.append('age',age);
+    fd.append('gender',gender);fd.append('phone',phone);fd.append('email',email);
+    fd.append('password',pwd);fd.append('confirm',conf);
+    const res=await fetch('/register',{method:'POST',body:fd,redirect:'manual'});
+    if(res.type==='opaqueredirect'||res.status===302||res.redirected){showOtpSection(email);return;}
+    const text=await res.text();
+    if(res.url&&res.url.includes('/dashboard')){window.location.href='/dashboard';return;}
+    const tmp=document.createElement('div');tmp.innerHTML=text;
+    const errDiv=tmp.querySelector('.alert-err');
+    if(errDiv){showFormError(errDiv.textContent.replace('⚠️','').trim());btn.disabled=false;btn.textContent='🔐 Generate & Send OTP to Email';return;}
+    if(text.includes('verify')||res.ok){showOtpSection(email);}
+    else{btn.disabled=false;btn.textContent='🔐 Generate & Send OTP to Email';showFormError('Unexpected server response.');}
+  }catch(err){btn.disabled=false;btn.textContent='🔐 Generate & Send OTP to Email';showFormError('Network error. Please try again.');console.error(err);}
+}
+function showOtpSection(email){
+  document.getElementById('otp-email-display').textContent=email;
+  document.getElementById('email-hidden').value=email;
+  document.getElementById('otp-section').classList.add('visible');
+  document.getElementById('otp-verified-banner').classList.remove('show');
+  clearDigits();startTimer();
+  setTimeout(()=>document.querySelectorAll('.otp-digit')[0]?.focus(),120);
+  document.getElementById('otp-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('gen-otp-btn').textContent='✓ OTP Sent — Resend';
+  document.getElementById('gen-otp-btn').disabled=false;
+}
+document.addEventListener('DOMContentLoaded',function(){
+  const inputs=document.querySelectorAll('.otp-digit');
+  inputs.forEach((inp,i)=>{
+    inp.addEventListener('input',()=>{
+      inp.value=inp.value.replace(/\D/g,'').slice(-1);
+      if(inp.value){inp.classList.add('filled');inp.classList.remove('error');if(i<inputs.length-1)inputs[i+1].focus();}
+      else{inp.classList.remove('filled');}
+      syncHidden();autoVerifyIfComplete();
+    });
+    inp.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!inp.value&&i>0){inputs[i-1].focus();inputs[i-1].value='';inputs[i-1].classList.remove('filled','error');syncHidden();}
+    });
+    inp.addEventListener('paste',e=>{
+      e.preventDefault();const paste=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
+      [...paste].slice(0,6).forEach((ch,j)=>{if(inputs[j]){inputs[j].value=ch;inputs[j].classList.add('filled');}});
+      syncHidden();inputs[Math.min(paste.length,5)].focus();autoVerifyIfComplete();
+    });
+  });
+});
+function syncHidden(){const inputs=document.querySelectorAll('.otp-digit');document.getElementById('otp-hidden').value=[...inputs].map(i=>i.value).join('');}
+function autoVerifyIfComplete(){const otp=document.getElementById('otp-hidden').value;if(otp.length===6)verifyOtpInline(otp);}
+async function verifyOtpInline(otp){
+  const email=document.getElementById('email-hidden').value||document.getElementById('f-email')?.value.trim();
+  const errEl=document.getElementById('otp-inline-err');errEl.style.display='none';errEl.textContent='';
+  try{
+    const fd=new FormData();fd.append('action','verify_otp');fd.append('otp',otp);fd.append('email',email);
+    const res=await fetch('/register',{method:'POST',body:fd,redirect:'manual'});
+    if(res.type==='opaqueredirect'||res.status===302||res.redirected){window.location.href='/dashboard';return;}
+    const text=await res.text();
+    if(res.url&&res.url.includes('/dashboard')){window.location.href='/dashboard';return;}
+    const tmp=document.createElement('div');tmp.innerHTML=text;
+    const errDiv=tmp.querySelector('.alert-err');
+    if(errDiv){const msg=errDiv.textContent.replace('⚠️','').trim();errEl.textContent='⚠️ '+msg;errEl.style.display='block';document.querySelectorAll('.otp-digit').forEach(d=>d.classList.add('error'));return;}
+    markVerified();
+  }catch(err){errEl.textContent='⚠️ Network error. Please try again.';errEl.style.display='block';console.error(err);}
+}
+function markVerified(){
+  otpVerified=true;document.getElementById('otp-verified-banner').classList.add('show');
+  document.querySelectorAll('.otp-digit').forEach(d=>{d.classList.add('filled');d.classList.remove('error');d.disabled=true;});
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  document.getElementById('form-action').value='verify_otp';
+  const sb=document.getElementById('submit-btn');sb.disabled=false;sb.style.opacity='1';sb.style.cursor='pointer';
+  sb.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+async function resendOtp(){
+  const btn=document.getElementById('resend-btn');btn.disabled=true;btn.textContent='⏳ Sending…';
+  await generateOtp();btn.textContent='🔄 Resend';setTimeout(()=>{btn.disabled=false;},30000);
+}
+function startTimer(){
+  if(timerInterval)clearInterval(timerInterval);
+  const el=document.getElementById('timer'),resendBtn=document.getElementById('resend-btn');
+  resendBtn.disabled=true;el.style.color='';let seconds=300;
+  timerInterval=setInterval(()=>{
+    const m=String(Math.floor(seconds/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0');
+    el.textContent=`${m}:${s}`;
+    if(seconds<=270)resendBtn.disabled=false;
+    if(seconds===0){clearInterval(timerInterval);el.textContent='Expired';el.style.color='#cc2200';}
+    seconds--;
+  },1000);
+}
+function validateForm(e){
+  if(!otpVerified){e.preventDefault();showFormError('Please verify your email with the OTP before submitting.');document.getElementById('otp-section').scrollIntoView({behavior:'smooth',block:'center'});return false;}
+  document.getElementById('email-hidden').value=document.getElementById('f-email')?.value.trim();
+  return true;
+}
+</script>
+</body>
+</html>
