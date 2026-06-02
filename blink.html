@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Blink Communication &#8212; EmoSense</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#080c10;--s:#0d1318;--s2:#131b22;--b:#1e2d3a;--a:#00e8a2;--a2:#00b8ff;--w:#ff6b35;--t:#e8f0f5;--m:#4a6070;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t);font-family:'Sora',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:
+  linear-gradient(rgba(0,232,162,.015) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,232,162,.015) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;}
+
+/* HEADER */
+header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;border-bottom:1px solid var(--b);background:rgba(8,12,16,.92);backdrop-filter:blur(12px);}
+.logo{display:flex;align-items:center;gap:10px;}
+.li{width:34px;height:34px;background:var(--a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.lt{font-size:1.25rem;font-weight:700;letter-spacing:-.02em;}
+.lt span{color:var(--a);}
+.lt small{color:#ffffff;font-size:.75rem;font-weight:400;margin-left:6px;}
+.hdr-right{display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:.74rem;color:#ffffff;}
+.pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid #ffffff;background:var(--s);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--m);transition:background .3s;}
+.dot.live{background:var(--a);animation:pulse 1.5s infinite;}
+.dot.warn{background:var(--w);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.back-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;
+  background:var(--s2);border:1px solid #ffffff;color:#ffffff;text-decoration:none;
+  font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;transition:all .2s;}
+.back-btn:hover{border-color:var(--a);color:var(--a);}
+
+/* MAIN GRID */
+main{position:relative;z-index:1;display:grid;grid-template-columns:1fr 370px;gap:18px;
+  padding:20px 28px;max-width:1280px;margin:0 auto;}
+
+/* CARDS */
+.card{background:var(--s);border:1px solid var(--b);border-radius:16px;overflow:hidden;transition:border-color .3s;}
+.card:hover{border-color:rgba(0,232,162,.18);}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;
+  border-bottom:1px solid var(--b);background:var(--s2);}
+.ct{font-size:.67rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;}
+.cb{padding:18px;}
+
+/* VIDEO PANEL */
+.vc{grid-column:1;grid-row:1/3;}
+.vw{position:relative;background:#000;aspect-ratio:4/3;}
+#vf{width:100%;height:100%;object-fit:cover;display:block;}
+.vb{position:absolute;top:12px;left:12px;background:rgba(255,107,53,.9);color:#fff;
+  font-family:'DM Mono',monospace;font-size:.6rem;padding:4px 9px;border-radius:4px;
+  letter-spacing:.1em;animation:pulse 1.5s infinite;}
+
+/* SENTENCE */
+.sd{background:var(--s2);border-radius:12px;padding:18px;min-height:82px;
+  display:flex;align-items:center;border:1px solid var(--b);margin-bottom:14px;
+  position:relative;overflow:hidden;}
+.sd::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--a);}
+#st{font-size:1.4rem;font-weight:600;line-height:1.3;word-break:break-word;padding-left:4px;}
+#st.empty{color:var(--m);font-weight:300;font-size:.95rem;}
+.sa{display:flex;gap:9px;flex-wrap:wrap;}
+.btn{padding:10px 17px;border-radius:10px;border:1px solid var(--b);background:var(--s2);
+  color:var(--t);font-family:'Sora',sans-serif;font-size:.79rem;font-weight:600;
+  cursor:pointer;transition:all .2s;}
+.btn:hover{border-color:var(--a);color:var(--a);}
+.btn.p{background:var(--a);color:#000;border-color:var(--a);}
+.btn.p:hover{background:#00c98a;}
+.btn.d:hover{border-color:var(--w);color:var(--w);}
+.btn.send{background:var(--a2);color:#000;border-color:var(--a2);margin-left:auto;}
+.btn.send:hover{background:#009dd9;}
+
+/* METRICS */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px;}
+.mb{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;}
+.ml{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#ffffff;margin-bottom:5px;}
+.mv{font-family:'DM Mono',monospace;font-size:1.55rem;font-weight:500;color:var(--a);}
+.ear-wrap{background:var(--s2);border-radius:8px;padding:10px 14px;border:1px solid var(--b);margin-bottom:10px;}
+.ear-lbl{display:flex;justify-content:space-between;font-size:.67rem;color:#ffffff;margin-bottom:6px;}
+.ear-track{height:6px;background:var(--b);border-radius:3px;position:relative;overflow:visible;}
+.ear-fill{height:100%;border-radius:3px;background:var(--a);transition:width .15s;min-width:2px;}
+.eth{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--w);border-radius:1px;}
+
+/* WORD SCANNER */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.sw{padding:8px 3px;border-radius:7px;border:1px solid var(--b);background:var(--s2);
+  font-size:.64rem;font-weight:600;text-align:center;color:#ffffff;
+  font-family:'DM Mono',monospace;letter-spacing:.04em;transition:all .2s;}
+.sw.active{background:var(--a);color:#000;border-color:var(--a);transform:scale(1.07);
+  box-shadow:0 0 12px rgba(0,232,162,.4);}
+.sw.act{color:var(--a2);border-color:rgba(0,184,255,.22);}
+.sw.act.active{background:var(--a2);color:#000;}
+.sw.crit{color:var(--w);border-color:rgba(255,107,53,.2);}
+.sw.crit.active{background:var(--w);color:#fff;}
+
+/* SETTINGS */
+.sr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sl{font-size:.68rem;color:#ffffff;min-width:105px;}
+.sv{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a);min-width:36px;}
+input[type=range]{flex:1;accent-color:var(--a);height:4px;cursor:pointer;}
+.tr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--b);}
+.tl{font-size:.8rem;}
+.tog{position:relative;width:42px;height:22px;cursor:pointer;}
+.tog input{display:none;}
+.ts{position:absolute;inset:0;background:#1583e3;border-radius:12px;transition:background .3s;}
+.ts::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;
+  border-radius:50%;background:#fff;transition:transform .3s;}
+.tog input:checked+.ts{background:var(--a);}
+.tog input:checked+.ts::after{transform:translateX(20px);}
+
+/* LOG */
+.ll{display:flex;flex-direction:column;gap:5px;max-height:175px;overflow-y:auto;}
+.ll::-webkit-scrollbar{width:3px;}
+.ll::-webkit-scrollbar-thumb{background:var(--b);border-radius:2px;}
+.le{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:6px;
+  background:var(--s2);font-family:'DM Mono',monospace;font-size:.69rem;
+  animation:si .25s ease;}
+@keyframes si{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.lt2{color:#ffffff;min-width:52px;}
+.lw{color:var(--a);font-weight:500;}
+.lw.crit{color:var(--w);}
+
+/* TOAST */
+.ab{position:fixed;bottom:24px;right:24px;background:var(--s);border:1px solid var(--a);
+  border-radius:14px;padding:16px 20px;max-width:300px;z-index:100;display:none;}
+.ab.visible{display:block;animation:su .3s ease;}
+@keyframes su{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.at{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a);margin-bottom:5px;}
+.am{font-size:.84rem;line-height:1.4;}
+.ac{position:absolute;top:9px;right:11px;background:none;border:none;color:var(--m);cursor:pointer;font-size:.93rem;}
+
+/* CRITICAL ALERT FLASH */
+.crit-flash{position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  background:var(--w);color:#fff;font-weight:700;font-size:.9rem;
+  padding:12px 28px;border-radius:12px;z-index:200;display:none;box-shadow:0 4px 24px rgba(255,107,53,.5);}
+.crit-flash.show{display:block;animation:su .3s ease;}
+
+@media(max-width:860px){main{grid-template-columns:1fr;}.vc{grid-row:auto;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="li">&#128065;</div>
+    <div class="lt">B<span>link</span> Comm<small>EmoSense AAC</small></div>
+  </div>
+  <div class="hdr-right">
+    <div class="pill"><div class="dot" id="cd"></div><span id="cl">CAMERA</span></div>
+    <div class="pill"><div class="dot" id="fd"></div><span id="fl">FACE</span></div>
+    <div class="pill"><span id="ck">--:--:--</span></div>
+    <a href="/dashboard" class="back-btn">&#8592; Dashboard</a>
+  </div>
+</header>
+
+<!-- CRITICAL ALERT FLASH -->
+<div class="crit-flash" id="critFlash"></div>
+
+<main>
+
+  <!-- VIDEO + SENTENCE PANEL -->
+  <div class="card vc">
+    <div class="ch">
+      <span class="ct">Live Camera Feed</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.67rem;color:#ffffff" id="el">EAR &#8212;</span>
+    </div>
+    <div class="vw">
+      <img id="vf" src="/video/blink" alt="Camera Feed"/>
+      <div class="vb">&#9679; REC</div>
+    </div>
+    <div class="cb">
+      <div class="sd"><div id="st" class="empty">Waiting for blink input&#8230;</div></div>
+      <div class="sa">
+        <button class="btn p"    onclick="doSpeak()">&#128266; Speak</button>
+        <button class="btn d"    onclick="doClear()">&#10005; Clear</button>
+        <button class="btn send" onclick="doManualAlert()">&#128232; Alert Caretaker</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+
+    <!-- METRICS -->
+    <div class="card">
+      <div class="ch"><span class="ct">Detection Metrics</span></div>
+      <div class="cb">
+        <div class="mg">
+          <div class="mb"><div class="ml">Blink Count</div><div class="mv" id="bc">0</div></div>
+          <div class="mb"><div class="ml">EAR Score</div><div class="mv" id="ev">&#8212;</div></div>
+        </div>
+        <div class="ear-wrap">
+          <div class="ear-lbl"><span>Eye Aspect Ratio</span><span id="ep">&#8212;</span></div>
+          <div class="ear-track">
+            <div class="ear-fill" id="ef" style="width:0%"></div>
+            <div class="eth" id="etl" style="left:38%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCANNER -->
+    <div class="card">
+      <div class="ch">
+        <span class="ct">Word Scanner</span>
+        <span style="font-family:'DM Mono',monospace;font-size:.67rem;color:#ffffff" id="aw">&#8212;</span>
+      </div>
+      <div class="cb"><div class="sg" id="sg"></div></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="card">
+      <div class="ch"><span class="ct">Settings</span></div>
+      <div class="cb">
+        <div class="sr">
+          <span class="sl">Scan Speed</span>
+          <input type="range" id="ss" min="0.8" max="6" step="0.1" value="2" oninput="setScan(this.value)"/>
+          <span class="sv" id="ssv">2.0s</span>
+        </div>
+        <div class="sr">
+          <span class="sl">EAR Threshold</span>
+          <input type="range" id="et" min="0.15" max="0.35" step="0.01" value="0.23" oninput="setEar(this.value)"/>
+          <span class="sv" id="etv">0.23</span>
+        </div>
+        <div class="tr">
+          <span class="tl">Pause Scanning</span>
+          <label class="tog"><input type="checkbox" id="pt" onchange="setPause(this.checked)"/><span class="ts"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORD LOG -->
+    <div class="card">
+      <div class="ch">
+        <span class="ct">Word Log</span>
+        <span style="font-family:'DM Mono',monospace;font-size:.67rem;color:#ffffff" id="lc">0 words</span>
+      </div>
+      <div class="cb" style="padding-top:10px">
+        <div class="ll" id="ll">
+          <div style="color:var(--m);font-size:.72rem;text-align:center;padding:14px 0">No words yet</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="ab" id="ab">
+  <button class="ac" onclick="closeA()">&#10005;</button>
+  <div class="at">&#10003; Caregiver Alerted</div>
+  <div class="am" id="am"></div>
+</div>
+
+<script>
+const CRIT  = ["HELP","PAIN","MEDICINE","TOILET","UNCOMFORTABLE","SCARED","URGENT"];
+const ACT   = ["SPEAK","CLEAR","REPEAT","STOP"];
+let opts = [], logN = 0, lastSentence = '';
+
+// CLOCK
+setInterval(()=>{
+  document.getElementById('ck').textContent = new Date().toTimeString().slice(0,8);
+}, 1000);
+
+// BUILD SCANNER GRID
+function buildGrid(o){
+  const g = document.getElementById('sg');
+  g.innerHTML = ''; opts = o;
+  o.forEach((w,i)=>{
+    const d = document.createElement('div');
+    let cls = 'sw';
+    if(ACT.includes(w))  cls += ' act';
+    if(CRIT.includes(w)) cls += ' crit';
+    d.className = cls; d.id = 'w'+i; d.textContent = w;
+    g.appendChild(d);
+  });
+}
+
+// POLL STATE
+async function poll(){
+  try{
+    const r = await fetch('/api/blink/state'), d = await r.json();
+
+    // Status dots
+    document.getElementById('cd').className = 'dot live';
+    const faceOk = d.face_detected;
+    document.getElementById('fd').className = faceOk ? 'dot live' : 'dot warn';
+    document.getElementById('fl').textContent = faceOk ? 'FACE ✓' : 'NO FACE';
+
+    // Sentence
+    const se = document.getElementById('st');
+    if(d.sentence && d.sentence.trim()){
+      se.textContent = d.sentence; se.classList.remove('empty');
+    } else {
+      se.textContent = 'Waiting for blink input…'; se.classList.add('empty');
+    }
+
+    // Metrics
+    document.getElementById('bc').textContent = d.blink_count;
+    document.getElementById('ev').textContent = d.ear.toFixed(3);
+    document.getElementById('el').textContent = 'EAR ' + d.ear.toFixed(3);
+    document.getElementById('ep').textContent = (d.ear * 100).toFixed(0) + '%';
+
+    // EAR bar
+    const pct = Math.min((d.ear / 0.6) * 100, 100);
+    document.getElementById('ef').style.width = pct + '%';
+    document.getElementById('ef').style.background = d.ear < d.ear_threshold ? 'var(--w)' : 'var(--a)';
+    document.getElementById('etl').style.left = (d.ear_threshold / 0.6 * 100) + '%';
+
+    // Build grid once
+    if(opts.length === 0 && d.options) buildGrid(d.options);
+
+    // Highlight active word
+    if(opts.length > 0){
+      document.querySelectorAll('.sw').forEach((e,i) => e.classList.toggle('active', i === d.selected_index));
+      document.getElementById('aw').textContent = d.selected_word;
+    }
+
+    // Log
+    if(d.log && d.log.length !== logN){
+      logN = d.log.length;
+      document.getElementById('lc').textContent = logN + ' words';
+      const ll = document.getElementById('ll');
+      ll.innerHTML = '';
+      [...d.log].reverse().forEach(e => {
+        const div = document.createElement('div');
+        div.className = 'le';
+        const isCrit = CRIT.includes(e.word);
+        div.innerHTML = '<span class="lt2">' + e.time.slice(11,19) + '</span>'
+          + '<span class="lw' + (isCrit?' crit':'') + '">' + e.word
+          + (isCrit ? ' &#128276;' : '') + '</span>';
+        ll.appendChild(div);
+      });
+
+      // Flash on critical word
+      const lastEntry = d.log[d.log.length - 1];
+      if(lastEntry && CRIT.includes(lastEntry.word)){
+        showCritFlash(lastEntry.word);
+      }
+    }
+
+  } catch(e){
+    document.getElementById('cd').className = 'dot warn';
+  }
+}
+
+setInterval(poll, 220); poll();
+
+// CRITICAL WORD FLASH
+function showCritFlash(word){
+  const el = document.getElementById('critFlash');
+  el.textContent = '🚨 CRITICAL: "' + word + '" — Caretaker alert sent automatically!';
+  el.classList.add('show');
+  setTimeout(()=> el.classList.remove('show'), 4000);
+}
+
+// CONTROLS
+async function doSpeak(){
+  await fetch('/api/blink/speak', {method:'POST'});
+}
+async function doClear(){
+  await fetch('/api/blink/clear', {method:'POST'});
+  document.getElementById('st').textContent = 'Waiting for blink input…';
+  document.getElementById('st').classList.add('empty');
+}
+async function doManualAlert(){
+  const s = document.getElementById('st').textContent;
+  if(!s || s.includes('Waiting')){showA('No message to send yet.');return;}
+  await fetch('/api/blink/alert', {method:'POST'});
+  showA('"' + s.slice(0,50) + '" sent to caregiver.');
+}
+
+function showA(m){
+  document.getElementById('am').textContent = m;
+  document.getElementById('ab').classList.add('visible');
+  setTimeout(closeA, 5500);
+}
+function closeA(){ document.getElementById('ab').classList.remove('visible'); }
+
+async function setScan(v){
+  document.getElementById('ssv').textContent = parseFloat(v).toFixed(1) + 's';
+  await fetch('/api/blink/settings',{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify({scan_speed:parseFloat(v)})});
+}
+async function setEar(v){
+  document.getElementById('etv').textContent = parseFloat(v).toFixed(2);
+  await fetch('/api/blink/settings',{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify({ear_threshold:parseFloat(v)})});
+}
+async function setPause(c){
+  await fetch('/api/blink/settings',{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify({paused:c})});
+}
+</script>
+</body>
+</html>

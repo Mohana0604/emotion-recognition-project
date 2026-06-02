@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Emotion Detection</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#080c12;--s:#0e1420;--s2:#131d2a;--b:#1e2d42;--a:#00e5c0;--a2:#7b5cfa;--t:#e8edf5;--m:#5a7090;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:#ffffff;font-family:'DM Sans',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;border-bottom:1px solid var(--b);background:rgba(8,12,18,.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:10px;}
+.bi{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:16px;}
+.bn{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.nb{padding:7px 16px;border-radius:9px;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:'Syne',sans-serif;transition:all .2s;}
+.np{background:linear-gradient(135deg,var(--a2),var(--a));color:#000000;}
+.ng{background:transparent;color:#ffffff;border:1px solid #ffffff;}
+.ng:hover{color:var(--t);}
+main{max-width:1200px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:1fr 340px;gap:18px;}
+.card{background:var(--s);border:1px solid #ffffff;border-radius:16px;overflow:hidden;}
+.ch{padding:14px 18px;border-bottom:1px solid var #ffffff;background:var(--s2);display:flex;align-items:center;justify-content:space-between;}
+.ct{font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;}
+.cb{padding:18px;}
+.vw{position:relative;background:#000;aspect-ratio:4/3;}
+img{width:100%;height:100%;object-fit:cover;display:block;}
+.vb{position:absolute;top:12px;left:12px;background:rgba(255,107,53,.9);color:#fff;font-size:.6rem;font-weight:500;padding:4px 9px;border-radius:4px;letter-spacing:.1em;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.emo-display{background:var(--s2);border-radius:14px;padding:24px;text-align:center;border:1px solid #ffffff;margin-bottom:14px;}
+.emo-icon{font-size:52px;margin-bottom:10px;display:block;transition:all .4s;}
+.emo-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;transition:color .4s;}
+.emo-state{font-size:13px;color:#ffffff;margin-bottom:14px;}
+.conf-bar{height:8px;background:var(--b);border-radius:4px;overflow:hidden;}
+.conf-fill{height:100%;border-radius:4px;background:var(--a);transition:width .4s;}
+.conf-lbl{font-size:11px;color:#ffffff;margin-top:6px;text-align:right;}
+.suggestions{display:flex;flex-direction:column;gap:10px;}
+.sug-item{display:flex;align-items:flex-start;gap:12px;background:var(--s2);border:1px solid var(--b);border-radius:11px;padding:13px 14px;}
+.sug-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.sug-title{font-weight:600;font-size:13px;margin-bottom:2px;}
+.sug-desc{font-size:12px;color:#ffffff;line-height:1.5;}
+.alert-badge{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:#ff8060;border-radius:10px;padding:10px 14px;font-size:12px;line-height:1.6;margin-bottom:14px;display:none;}
+.alert-badge.visible{display:block;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sb{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;}
+.sl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#ffffff;margin-bottom:4px;}
+.sv{font-family:monospace;font-size:1.4rem;font-weight:600;color:var(--a);}
+.quick-tip{background:rgba(0,229,192,.06);border:1px solid rgba(0,229,192,.15);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--a);line-height:1.6;margin-top:10px;}
+@media(max-width:860px){main{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand"><div class="bi">&#129504;</div><div class="bn">EmoSense</div></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <a href="/blink" class="nb np" style="background:linear-gradient(135deg,#00e8a2,#00b8ff)">&#128065; Blink Comm</a>
+    <a href="/dashboard" class="nb ng">&#8592; Dashboard</a>
+    <a href="/logout" class="nb ng">Sign Out</a>
+  </div>
+</nav>
+<main>
+  <div class="card">
+    <div class="ch"><span class="ct">Live Emotion Camera</span><span style="font-size:.65rem;color:#ffffff" id="conf-hdr">Confidence —</span></div>
+    <div class="vw"><img src="/video/emotion" alt="Camera"/><div class="vb">&#9679; LIVE</div></div>
+    <div class="cb">
+      <div class="alert-badge" id="abadge">&#128276; <strong>Caregiver alert sent automatically</strong> — persistent negative emotion detected.</div>
+      <div class="emo-display">
+        <span class="emo-icon" id="ei">&#128528;</span>
+        <div class="emo-name" id="en">Detecting...</div>
+        <div class="emo-state" id="es">Reading your expression</div>
+        <div class="conf-bar"><div class="conf-fill" id="cf" style="width:0%"></div></div>
+        <div class="conf-lbl" id="cl">—</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <div class="ch"><span class="ct">Live Stats</span></div>
+      <div class="cb">
+        <div class="stat-row">
+          <div class="sb"><div class="sl">Emotion</div><div class="sv" id="sv-emo" style="font-size:16px">—</div></div>
+          <div class="sb"><div class="sl">Confidence</div><div class="sv" id="sv-conf">—</div></div>
+        </div>
+        <div class="alert-badge visible" style="display:block;background:rgba(0,229,192,.06);border-color:rgba(0,229,192,.15);color:var(--a)">
+          &#128274; Alert emails sent to <strong>{{ user.email }}</strong> if Fear or Sadness persists 20s+
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">Suggestions</span></div>
+      <div class="cb">
+        <div class="suggestions" id="sugg"><div style="color:var(--m);text-align:center;padding:20px;font-size:13px">Waiting for emotion...</div></div>
+        <div class="quick-tip" id="qtip" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+const EMO_DATA = {
+  happy:{icon:'😄',name:'Happy',state:'Positive & Joyful',color:'#00e5c0',suggestions:[{i:'🎯',t:'Set a new goal',d:'Channel energy into planning something exciting.'},{i:'🤝',t:'Connect with others',d:'Share your happiness with someone you care about.'},{i:'📝',t:'Journal your mood',d:'Write what is making you happy to revisit later.'}],tip:'Smile often — it is contagious!'},
+  surprise:{icon:'😲',name:'Surprise',state:'Excited & Alert',color:'#f0c040',suggestions:[{i:'📚',t:'Learn something new',d:'Your alert mind is great for picking up new skills.'},{i:'🎢',t:'Try a new activity',d:'Channel this energy into something adventurous.'},{i:'🧩',t:'Solve a puzzle',d:'Your stimulated mind excels at brain teasers.'}],tip:'Write 3 things you are excited about.'},
+  sadness:{icon:'😢',name:'Sadness',state:'Low Mood',color:'#7b9cfa',suggestions:[{i:'🎵',t:'Listen to music',d:'Uplifting music directly affects your mood.'},{i:'🚶',t:'Go for a walk',d:'Even 10 minutes outside lifts spirits.'},{i:'🫂',t:'Talk to someone',d:'Reach out to a trusted friend or counselor.'}],tip:'Cry if you need to — it is a healthy release.'},
+  anger:{icon:'😠',name:'Anger',state:'Stressed & Tense',color:'#ff6b6b',suggestions:[{i:'🧘',t:'Deep breathing',d:'4-7-8: inhale 4s, hold 7s, exhale 8s.'},{i:'🥊',t:'Physical exercise',d:'Run or do pushups to release tension.'},{i:'🌊',t:'Cold water',d:'Splash cold water to activate calm reflex.'}],tip:'Count to 10 before reacting.'},
+  fear:{icon:'😨',name:'Fear',state:'Anxious & Worried',color:'#b47efa',suggestions:[{i:'🌿',t:'5-4-3-2-1 Grounding',d:'Name 5 things you see, 4 feel, 3 hear, 2 smell, 1 taste.'},{i:'🧘',t:'Meditation',d:'Try 5 minutes of guided breathing.'},{i:'📋',t:'Write your worries',d:'Listing fears on paper reduces their power.'}],tip:'Most feared events never happen. Focus on what you can control.'},
+  disgust:{icon:'🤢',name:'Disgust',state:'Uncomfortable',color:'#52c97a',suggestions:[{i:'🚶',t:'Change environment',d:'Step outside for fresh perspective.'},{i:'🌬️',t:'Fresh air',d:'Open a window and breathe deeply.'},{i:'🧹',t:'Tidy your space',d:'A clean environment improves mental state.'}],tip:'Identify what is bothering you and remove the trigger.'},
+  neutral:{icon:'😐',name:'Neutral',state:'Calm & Balanced',color:'#a0b4cc',suggestions:[{i:'🎯',t:'Set an intention',d:'Use this calm moment to decide your focus.'},{i:'📚',t:'Read or learn',d:'A neutral mind absorbs information well.'},{i:'🧘',t:'Light meditation',d:'Even 5 minutes elevates your baseline mood.'}],tip:'Neutral is healthy. Use this calm for focused deep work.'}
+};
+let lastEmo=null, alertShown=false;
+let sessionEmotions=[], sessionStart=Date.now(), lastSave=Date.now();
+
+// Auto-save session every 60 seconds
+setInterval(async ()=>{
+  if(sessionEmotions.length === 0) return;
+  const duration = Math.round((Date.now()-sessionStart)/1000);
+  try{
+    await fetch('/api/save_session',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({emotions: sessionEmotions, duration: duration})
+    });
+    console.log('[SESSION] Auto-saved', sessionEmotions.length, 'detections');
+    sessionEmotions = []; // reset after save so sessions accumulate
+    sessionStart = Date.now();
+  }catch(e){ console.error('[SESSION] save failed', e); }
+}, 60000);
+
+// Save on page unload
+window.addEventListener('beforeunload', async ()=>{
+  if(sessionEmotions.length > 0){
+    const duration = Math.round((Date.now()-sessionStart)/1000);
+    navigator.sendBeacon('/api/save_session',
+      JSON.stringify({emotions: sessionEmotions, duration: duration}));
+  }
+});
+
+async function poll(){
+  try{
+    const r=await fetch('/api/emotion/state'), d=await r.json();
+    if(!d.emotion) return;
+    const info = EMO_DATA[d.emotion] || EMO_DATA['neutral'];
+    document.getElementById('ei').textContent = info.icon;
+    document.getElementById('en').textContent = info.name;
+    document.getElementById('en').style.color = info.color;
+    document.getElementById('es').textContent = info.state;
+    document.getElementById('cl').textContent = d.confidence + '% confidence';
+    document.getElementById('cf').style.width = d.confidence + '%';
+    document.getElementById('cf').style.background = info.color;
+    document.getElementById('conf-hdr').textContent = 'Conf ' + d.confidence + '%';
+    document.getElementById('sv-emo').textContent = info.icon + ' ' + info.name;
+    document.getElementById('sv-conf').textContent = d.confidence + '%';
+    // Track for session saving
+    if(d.emotion) sessionEmotions.push(d.emotion);
+
+    if(d.emotion !== lastEmo){
+      lastEmo = d.emotion;
+      const sg = document.getElementById('sugg');
+      sg.innerHTML = info.suggestions.map(s => '<div class="sug-item"><span class="sug-icon">'+s.i+'</span><div><div class="sug-title">'+s.t+'</div><div class="sug-desc">'+s.d+'</div></div></div>').join('');
+      const qt = document.getElementById('qtip');
+      qt.textContent = '&#128161; ' + info.tip;
+      qt.style.display = 'block';
+      if((d.emotion==='fear'||d.emotion==='sadness') && !alertShown){
+        alertShown = true;
+        document.getElementById('abadge').classList.add('visible');
+        setTimeout(()=>{alertShown=false;document.getElementById('abadge').classList.remove('visible');}, 8000);
+      }
+    }
+  }catch(e){}
+}
+setInterval(poll, 600); poll();
+</script>
+</body></html>
